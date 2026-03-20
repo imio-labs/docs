@@ -1,0 +1,33 @@
+---
+title: "Employee Logout"
+description: "Invalidate an employee's session token."
+---
+
+## POST `/employee/logout`
+
+Deletes the employee session, invalidating the `X-Employee-Token`. After logout, the token will be rejected on all subsequent requests.
+
+### Authentication
+
+| Header | Required |
+| ------ | -------- |
+| `Authorization: Bearer YOUR_API_KEY` | Yes |
+| `X-Employee-Token: YOUR_EMPLOYEE_TOKEN` | Yes |
+
+### Example request
+
+```bash
+curl -X POST "https://tapcoupon.at/api/v1/employee/logout" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "X-Employee-Token: YOUR_EMPLOYEE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### Example response
+
+```json
+{
+  "message": "Logout successful"
+}
+```

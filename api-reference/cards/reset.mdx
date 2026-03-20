@@ -1,0 +1,43 @@
+---
+title: "Reset Card"
+description: "Archive the current card and create a fresh blank card with the same ID."
+---
+
+## POST `/card/:cardId/reset`
+
+Archives the existing card (preserving its full history) and creates a new blank card with the same `cardId`. After a reset, a new template must be applied before the card can be used again.
+
+<Note>
+  The reset itself is free, but applying a new template will be billed as usual.
+</Note>
+
+### Authentication
+
+| Header | Required |
+| ------ | -------- |
+| `Authorization: Bearer YOUR_API_KEY` | Yes |
+| `X-Employee-Token: YOUR_EMPLOYEE_TOKEN` | Yes |
+
+### Path parameters
+
+| Parameter | Type | Description |
+| --------- | ---- | ----------- |
+| `cardId` | string | The card to reset |
+
+### Example request
+
+```bash
+curl -X POST "https://tapcoupon.at/api/v1/card/9866191586296/reset" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "X-Employee-Token: YOUR_EMPLOYEE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### Example response
+
+```json
+{
+  "message": "Card reset successfully"
+}
+```

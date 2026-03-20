@@ -1,0 +1,54 @@
+---
+title: "Employee Validate"
+description: "Check whether an existing employee token is still valid."
+---
+
+## POST `/employees/validate`
+
+Validates an existing employee token without generating a new one. Use this to check session validity on app startup without forcing a re-login.
+
+### Authentication
+
+`Authorization: Bearer YOUR_API_KEY`
+
+### Request body
+
+| Field | Type | Required | Description |
+| ----- | ---- | -------- | ----------- |
+| `username` | string | Yes | Employee username |
+| `password` | string | Yes | Employee password |
+
+### Example request
+
+```bash
+curl -X POST "https://tapcoupon.at/api/v1/employees/validate" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "Employee Name",
+    "password": "Employee Password"
+  }'
+```
+
+### Example response
+
+```json
+{
+  "employee": {
+    "id": "68d4f10eeceac90f5cf0ebd6",
+    "username": "Cashier Username",
+    "createdAt": "2025-09-25T07:36:46.989Z",
+    "updatedAt": "2025-09-25T07:36:46.989Z",
+    "accessTotalIncome": false,
+    "deleteScanHistory": false,
+    "resetAndOverwriteCards": false,
+    "locationIds": [],
+    "clientId": "68d2deba02c23040fafc8145"
+  },
+  "message": "Cashier validated successfully"
+}
+```
+
+<Note>
+  Unlike [Employee Login](/api-reference/employees/login), this endpoint does **not** rotate the token.
+</Note>

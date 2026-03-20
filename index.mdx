@@ -1,97 +1,45 @@
 ---
 title: "Introduction"
-description: "Welcome to the new home for your documentation"
+description: "TapCoupon API — issue, manage, and redeem digital coupon and loyalty cards."
 ---
 
-## Setting up
+## What is TapCoupon?
 
-Get your documentation site up and running in minutes.
+TapCoupon lets businesses create branded coupon and loyalty cards. Cards can be physical (NFC) or digital (QR code via email). The API powers the redemption flow for your point-of-sale integration.
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
-
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Make your first API call in minutes.
   </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
+  <Card title="Authentication" icon="key" href="/authentication">
+    Learn how API key and employee authentication work.
   </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
+  <Card title="Cards" icon="credit-card" href="/api-reference/cards/get">
+    Fetch, charge, stamp, and manage cards.
   </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
+  <Card title="Templates" icon="layer-group" href="/api-reference/templates/list">
+    Manage the templates that define your card types.
   </Card>
-</Columns>
+</CardGroup>
 
-## Create beautiful pages
+## Card types
 
-Everything you need to create world-class documentation.
+| Type | How it's issued | How it's used |
+| ---- | --------------- | ------------- |
+| **Coupon card** | Physical (ordered in dashboard) or digital (issued at POS, sent by email) | Customer taps/scans → amount deducted from balance |
+| **Loyalty card** | Physical or digital | Customer taps/scans → stamp recorded; reward triggered when target is reached |
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
+## How it works
 
-## Need inspiration?
+1. **Create a location** — represents a physical store or branch. Required before generating an API key.
+2. **Create a template** — defines the rules for a card (e.g. "€50 gift voucher" or "5-stamp coffee loyalty card").
+3. **Issue cards**
+   - *Physical*: order NFC cards through the dashboard, then apply a template at the POS to activate them.
+   - *Digital*: issue directly from the POS via the API — the customer receives an email with a QR code.
+4. **Tap & redeem** — the POS calls the TapCoupon API to charge or stamp the card on each visit.
 
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+## Base URL
+
+```
+https://tapcoupon.at/api/v1
+```

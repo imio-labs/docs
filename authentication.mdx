@@ -1,0 +1,65 @@
+---
+title: "Authentication"
+description: "API key and employee token authentication."
+---
+
+## API key
+
+All endpoints require an API key passed as a Bearer token:
+
+```
+Authorization: Bearer YOUR_API_KEY
+```
+
+### Getting an API key
+
+1. Log in to the [TapCoupon Dashboard](https://dashboard.tapcoupon.com).
+2. Create a **location** (Settings → Locations) — an API key is always tied to a location.
+3. Go to **Settings → API Keys** and generate a key for that location.
+4. Copy the key — it is only shown once.
+
+<Warning>
+  Never expose your API key in client-side code or public repositories.
+</Warning>
+
+### Key properties
+
+| Field       | Description                                           |
+| ----------- | ----------------------------------------------------- |
+| `keyId`     | Unique identifier for the key (not the secret value)  |
+| `createdAt` | ISO 8601 creation timestamp                           |
+| `expiresAt` | Optional expiry date — key is rejected after this     |
+| `revoked`   | When `true`, all requests with this key are rejected  |
+
+---
+
+## Employee token
+
+Endpoints that write to a card (charge, stamp, apply, reset, create digital) also require an `X-Employee-Token` header. This token identifies which employee performed the action and is recorded in the card's audit log.
+
+```
+X-Employee-Token: YOUR_EMPLOYEE_TOKEN
+```
+
+### Getting an employee token
+
+Call [Employee Login](/api-reference/employees/login) with the employee's username and password. The response contains a `token` that remains valid until the employee logs out or after 24h have passed.
+
+```bash
+curl -X POST "https://tapcoupon.at/api/v1/employee/login" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ "username": "Employee Name", "password": "Employee Password" }'
+```
+
+To check if an existing token is still valid without generating a new one, use [Employee Validate](/api-reference/employees/validate).
+
+---
+
+## Summary
+
+| Endpoint type | `Authorization` header | `X-Employee-Token` header |
+| ------------- | ---------------------- | ------------------------- |
+| Read-only (GET) | Required | Not required |
+| Write (charge / stamp / apply / create) | Required | Required |
+| Employee login / validate | Required | Not required |

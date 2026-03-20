@@ -1,0 +1,62 @@
+---
+title: "Employee Login"
+description: "Authenticate an employee and get a session token."
+---
+
+## POST `/employee/login`
+
+Validates employee credentials and returns a new session token. The token is used as the `X-Employee-Token` header on card write operations.
+
+### Authentication
+
+`Authorization: Bearer YOUR_API_KEY`
+
+### Request body
+
+| Field | Type | Required | Description |
+| ----- | ---- | -------- | ----------- |
+| `username` | string | Yes | Employee username |
+| `password` | string | Yes | Employee password |
+
+### Example request
+
+```bash
+curl -X POST "https://tapcoupon.at/api/v1/employee/login" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "Employee Name",
+    "password": "Employee Password"
+  }'
+```
+
+### Example response
+
+```json
+{
+  "employee": {
+    "id": "68d4f10eeceac90f5cf0ebd6",
+    "username": "Employee Name",
+    "createdAt": "2025-09-25T07:36:46.989Z",
+    "updatedAt": "2025-09-25T07:36:46.989Z",
+    "accessTotalIncome": false,
+    "deleteScanHistory": false,
+    "resetAndOverwriteCards": false,
+    "locationIds": [],
+    "clientId": "68d2deba02c23040fafc8145"
+  },
+  "message": "Login successful",
+  "token": "UmAQiB3ljRDyT51RuBIhCLscQMZVZTo3"
+}
+```
+
+Use the `token` value as `X-Employee-Token` on subsequent requests.
+
+### Employee permissions
+
+| Field | Description |
+| ----- | ----------- |
+| `accessTotalIncome` | Can view revenue reports |
+| `deleteScanHistory` | Can delete card scan history |
+| `resetAndOverwriteCards` | Can reset and re-apply templates to cards |
+| `locationIds` | Locations this employee is assigned to (empty = all locations) |

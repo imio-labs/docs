@@ -1,0 +1,29 @@
+---
+title: "Location"
+description: "Get the location name associated with your API key."
+---
+
+## GET `/location`
+
+Returns the name of the location tied to the current API key. The response is plain text, not JSON.
+
+### Authentication
+
+`Authorization: Bearer YOUR_API_KEY`
+
+### Example request
+
+```bash
+curl "https://tapcoupon.at/api/v1/location" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+### Example response
+
+```
+Traunkirchen
+```
+
+<Note>
+  This endpoint returns a plain text string, not a JSON object.
+</Note>

@@ -1,0 +1,72 @@
+---
+title: "Get Templates"
+description: "Retrieve all templates for your account."
+---
+
+## GET `/templates`
+
+Returns all active templates associated with your API key's account. Templates define the rules for a card type and are required when applying or creating a card.
+
+### Authentication
+
+`Authorization: Bearer YOUR_API_KEY`
+
+### Example request
+
+```bash
+curl "https://tapcoupon.at/api/v1/templates" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+### Example response
+
+```json
+{
+  "success": true,
+  "templates": [
+    {
+      "id": "693869428d49e641ba110e16",
+      "pocketId": "fvbi1fqshxfxktc",
+      "name": "Example Loyalty Template",
+      "description": "Get a free coffee after 5 visits!",
+      "templateType": "loyaltyTemplate",
+      "createdAt": "2025-12-09T18:24:02.013Z",
+      "updatedAt": "2025-12-09T18:24:02.013Z",
+      "isActive": true,
+      "cardData": {
+        "cardType": "loyaltyCard",
+        "amount": 500,
+        "scansNeeded": 5,
+        "rewardMessage": "You earned a free coffee!",
+        "amountRenews": 1,
+        "originalAmountRenews": 1,
+        "unlimitedRenews": false
+      }
+    },
+    {
+      "id": "693869428d49e641ba110e17",
+      "pocketId": "fvbi1fqshxfxktc",
+      "name": "50€ Coupon Template",
+      "description": "50€ free to spend on your next purchase!",
+      "templateType": "couponTemplate",
+      "createdAt": "2025-12-09T18:24:02.015Z",
+      "updatedAt": "2025-12-09T18:24:02.015Z",
+      "isActive": true,
+      "cardData": {
+        "cardType": "couponCard",
+        "amount": 5000,
+        "amountLeft": 5000
+      }
+    }
+  ]
+}
+```
+
+### Template fields
+
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `id` | string | Use this as `templateId` when applying or creating cards |
+| `templateType` | string | `"loyaltyTemplate"` or `"couponTemplate"` |
+| `isActive` | boolean | Inactive templates cannot be applied to new cards |
+| `cardData` | object | Default card values — amounts are in **cents** |

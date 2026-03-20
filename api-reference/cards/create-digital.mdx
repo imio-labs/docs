@@ -1,0 +1,81 @@
+---
+title: "Create Digital Card"
+description: "Issue a digital card and send it to the customer by email."
+---
+
+## POST `/cards/create`
+
+Creates a digital card based on a template and immediately emails a QR code to the customer. Use this at the POS when a customer purchases a digital card.
+
+<Note>
+  This endpoint is billed. Check the current pricing with [GET /prices](/api-reference/other/prices) before calling it.
+</Note>
+
+### Authentication
+
+| Header | Required |
+| ------ | -------- |
+| `Authorization: Bearer YOUR_API_KEY` | Yes |
+| `X-Employee-Token: YOUR_EMPLOYEE_TOKEN` | Yes |
+
+### Request body
+
+| Field | Type | Required | Description |
+| ----- | ---- | -------- | ----------- |
+| `templateId` | string | Yes | ID of the template to apply |
+| `customer` | object | Yes | Customer who will receive the card |
+| `customer.name` | string | Yes | Customer's full name |
+| `customer.email` | string | Yes | Email address — the QR code is sent here |
+| `customer.phoneNumber` | string | No | Phone number (e.g. `"+43 123 456789"`) |
+| `customer.address` | string | No | Street address |
+| `customer.zipCode` | string | No | Postal/ZIP code |
+| `customer.city` | string | No | City |
+| `customer.birthdate` | string | No | ISO 8601 date |
+| `customer.privacyConsentGiven` | boolean | No | Whether the customer has given GDPR consent |
+
+### Example request
+
+```bash
+curl -X POST "https://tapcoupon.at/api/v1/cards/create" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "X-Employee-Token: YOUR_EMPLOYEE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "templateId": "69821d69ef6f60ade4db2255",
+    "customer": {
+      "name": "Bob",
+      "email": "bob@example.com",
+      "phoneNumber": "+43 123 456789",
+      "address": "Bakers Street 41",
+      "zipCode": "1234",
+      "city": "Vienna",
+      "birthdate": "1990-06-15T00:00:00Z",
+      "privacyConsentGiven": true
+    }
+  }'
+```
+
+### Example response
+
+```json
+{
+  "cardID": "2945823033425",
+  "pocketID": "ht9rue6q38q2em7",
+  "createdAt": "2025-10-02T17:59:38.960Z",
+  "cardType": "loyaltyCard",
+  "activated": true,
+  "location": {
+    "id": "68d40e39547258d05ba810c0",
+    "name": "Traunkirchen"
+  },
+  "customer": {
+    "name": "Bob",
+    "email": "bob@example.com"
+  },
+  "scansNeeded": 5,
+  "currentScans": 0,
+  "rewardMessage": "Congratulations! You earned a free coffee!",
+  "amountRenews": 10,
+  "unlimitedRenews": false
+}
+```

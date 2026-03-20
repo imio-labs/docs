@@ -1,0 +1,35 @@
+---
+title: "Prices"
+description: "Get current pricing for card operations."
+---
+
+## GET `/prices`
+
+Returns the current pricing for your account. During a test window, all prices are set to `0`.
+
+### Authentication
+
+`Authorization: Bearer YOUR_API_KEY`
+
+### Example request
+
+```bash
+curl "https://tapcoupon.at/api/v1/prices" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+### Example response
+
+```json
+{
+  "loyaltyCardSetUpFee": 25,
+  "percentagePerCouponLoad": 0.01
+}
+```
+
+### Response fields
+
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `loyaltyCardSetUpFee` | integer | Fee in cents charged when activating a loyalty card (applying a template or creating a digital card) |
+| `percentagePerCouponLoad` | number | Percentage of the coupon `amount` charged when a coupon card is activated (e.g. `0.01` = 1%) |

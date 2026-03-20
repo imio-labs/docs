@@ -1,0 +1,68 @@
+---
+title: "Apply Template"
+description: "Activate a card by applying a template to it."
+---
+
+## POST `/cards/apply`
+
+Links a card to a template, activating it. If the card already has a template applied, the existing card is archived and a new card with the same `cardId` is created.
+
+This is the primary activation step for **physical NFC cards**.
+
+### Authentication
+
+| Header | Required |
+| ------ | -------- |
+| `Authorization: Bearer YOUR_API_KEY` | Yes |
+| `X-Employee-Token: YOUR_EMPLOYEE_TOKEN` | Yes |
+
+### Request body
+
+| Field | Type | Required | Description |
+| ----- | ---- | -------- | ----------- |
+| `cardId` | string | Yes | The card to activate |
+| `templateId` | string | Yes | ID of the template to apply (see [Get Templates](/api-reference/templates/list)) |
+| `customer` | object | No | Customer info to associate with the card |
+| `customer.name` | string | No | Customer's full name |
+| `customer.email` | string | No | Customer's email address |
+| `customer.address` | string | No | Street address |
+| `customer.zipCode` | string | No | Postal/ZIP code |
+| `customer.city` | string | No | City |
+| `customer.birthdate` | string | No | ISO 8601 date |
+
+### Example request
+
+```bash
+curl -X POST "https://tapcoupon.at/api/v1/cards/apply" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "X-Employee-Token: YOUR_EMPLOYEE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "cardId": "5646662362504",
+    "templateId": "693869428d49e641ba110e17",
+    "customer": {
+      "name": "Bob",
+      "email": "bob@example.com",
+      "address": "Bakers Street 41",
+      "zipCode": "1234",
+      "city": "Vienna",
+      "birthdate": "1990-06-15T00:00:00Z"
+    }
+  }'
+```
+
+### Example response
+
+```json
+{
+  "message": "Template applied to card successfully",
+  "success": true
+}
+```
+
+### Error cases
+
+| Status | Reason |
+| ------ | ------ |
+| `404` | Card or template not found |
+| `400` | Invalid request body |

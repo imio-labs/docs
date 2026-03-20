@@ -1,33 +1,53 @@
 ---
-title: 'Introduction'
-description: 'Example section for showcasing API endpoints'
+title: "API Overview"
+description: "Base URL, conventions, and common patterns."
 ---
 
-<Note>
-  If you're not looking to build API reference documentation, you can delete
-  this section by removing the api-reference folder.
-</Note>
+## Base URL
 
-## Welcome
-
-There are two ways to build API documentation: [OpenAPI](https://mintlify.com/docs/api-playground/openapi/setup) and [MDX components](https://mintlify.com/docs/api-playground/mdx/configuration). For the starter kit, we are using the following OpenAPI specification.
-
-<Card
-  title="Plant Store Endpoints"
-  icon="leaf"
-  href="https://github.com/mintlify/starter/blob/main/api-reference/openapi.json"
->
-  View the OpenAPI specification file
-</Card>
+```
+https://tapcoupon.at/api/v1
+```
 
 ## Authentication
 
-All API endpoints are authenticated using Bearer tokens and picked up from the specification file.
+All requests require an API key as a Bearer token. Write operations additionally require an `X-Employee-Token` header. See the [Authentication guide](/authentication) for details.
+
+## Amounts
+
+All monetary amounts are **integers in cents**.
+
+| Value | Meaning |
+| ----- | ------- |
+| `500` | €5.00 |
+| `5000` | €50.00 |
+
+## Timestamps
+
+Timestamps in request/response bodies are ISO 8601 strings (e.g. `"2026-01-15T10:30:00Z"`).
+
+## Card types
+
+| `cardType` value | Description |
+| ---------------- | ----------- |
+| `couponCard` | Stores a monetary balance that gets deducted on each use |
+| `loyaltyCard` | Tracks stamps; triggers a reward when the target is reached |
+
+## Errors
+
+The API returns standard HTTP status codes. Error responses have this shape:
 
 ```json
-"security": [
-  {
-    "bearerAuth": []
-  }
-]
+{
+  "error": "Human-readable message",
+  "details": "Optional technical details"
+}
 ```
+
+| Status | Meaning |
+| ------ | ------- |
+| `400` | Bad request — missing or invalid fields |
+| `401` | Unauthorized — invalid or missing API key / employee token |
+| `404` | Not found — card or template does not exist |
+| `422` | Unprocessable — business rule violation (e.g. no scans left) |
+| `500` | Internal server error |

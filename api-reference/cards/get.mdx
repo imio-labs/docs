@@ -1,0 +1,107 @@
+---
+title: "Get Card Info"
+description: "Retrieve the current state of a card by its ID."
+---
+
+## GET `/cards`
+
+Returns all information about a card — its type, balance or stamp count, logs, and associated location.
+
+### Authentication
+
+`Authorization: Bearer YOUR_API_KEY`
+
+### Query parameters
+
+| Parameter   | Type   | Required | Description |
+| ----------- | ------ | -------- | ----------- |
+| `cardId`    | string | Yes      | The card's unique identifier (printed on the card) |
+| `timestamp` | string | Yes      | ISO 8601 timestamp of the request |
+
+### Example request
+
+```bash
+curl "https://tapcoupon.at/api/v1/cards?cardId=9866191586296&timestamp=2026-01-01T00:00:00Z" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+### Example response
+
+<CodeGroup>
+
+```json Loyalty card
+{
+  "id": "697f754e3e4ead082a606bc0",
+  "cardId": "9866191586296",
+  "serialNumber": 2,
+  "pocketId": "fvbi1fqshxfxktc",
+  "createdAt": "2026-02-01T15:46:22.168Z",
+  "updatedAt": "2026-02-01T15:48:07.444Z",
+  "activatedAt": "2026-02-01T15:46:22.168Z",
+  "lifetime": 0,
+  "cardType": "loyaltyCard",
+  "activated": true,
+  "description": "Get a free coffee after 5 visits!",
+  "amount": 500,
+  "logs": [
+    {
+      "createdAt": "2026-02-01T15:47:20.971Z",
+      "cardId": "9866191586296",
+      "path": "/api/v1/loyalty-cards",
+      "method": "POST",
+      "statusCode": 200,
+      "employeeUsername": "admin"
+    }
+  ],
+  "location": {
+    "id": "69445849dd6ed9d073acf534",
+    "pocketId": "fvbi1fqshxfxktc",
+    "name": "Wien"
+  },
+  "archived": false,
+  "testCard": false,
+  "scansNeeded": 5,
+  "currentScans": 5,
+  "rewardMessage": "You earned a free coffee!",
+  "amountRenews": 0,
+  "originalAmountRenews": 1,
+  "unlimitedRenews": false
+}
+```
+
+</CodeGroup>
+
+### Response fields
+
+**Base fields (all cards)**
+
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `cardId` | string | Unique card identifier |
+| `serialNumber` | integer | Sequential number within the account |
+| `cardType` | string | `"couponCard"` or `"loyaltyCard"` |
+| `activated` | boolean | Whether the card has been activated (template applied) |
+| `activatedAt` | string | ISO 8601 timestamp of activation |
+| `lifetime` | integer | Card lifetime in days from activation; `0` = unlimited |
+| `archived` | boolean | Archived cards are no longer usable |
+| `testCard` | boolean | Test cards are not billed |
+| `location` | object | Location this card belongs to |
+| `logs` | array | Audit log of all operations on the card |
+
+**Loyalty card additional fields**
+
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `scansNeeded` | integer | Total stamps needed to earn the reward |
+| `currentScans` | integer | Stamps collected in the current cycle |
+| `rewardMessage` | string | Message shown when the reward is earned |
+| `amountRenews` | integer | Renew cycles remaining |
+| `originalAmountRenews` | integer | Total renew cycles the card started with |
+| `unlimitedRenews` | boolean | If `true`, the card never expires from renewals |
+
+**Coupon card additional fields**
+
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `amount` | integer | Original balance in cents |
+| `amountLeft` | integer | Remaining balance in cents |

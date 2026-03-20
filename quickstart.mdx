@@ -1,80 +1,122 @@
 ---
 title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+description: "Make your first API call in under 5 minutes."
 ---
 
-## Get started in three steps
+## Prerequisites
 
-Get your documentation site running locally and make your first customization.
+Before making API calls you need:
 
-### Step 1: Set up your local environment
+1. A TapCoupon account — sign up at the [Dashboard](https://dashboard.tapcoupon.com).
+2. A **location** created in the dashboard (Settings → Locations).
+3. An **API key** generated for that location (Settings → API Keys).
 
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
+<Note>
+  API keys are tied to a location. Each location you operate can have its own key.
+</Note>
 
-### Step 2: Deploy your changes
+## 1. Log an employee in
 
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
+Most card operations require an employee session. Log in with the employee's credentials to get a token.
 
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
+```bash
+curl -X POST "https://tapcoupon.at/api/v1/employee/login" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "Employee Name",
+    "password": "Employee Password"
+  }'
+```
 
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
+```json
+{
+  "employee": { "id": "68d4f10eeceac90f5cf0ebd6", "username": "Employee Name" },
+  "message": "Login successful",
+  "token": "UmAQiB3ljRDyT51RuBIhCLscQMZVZTo3"
+}
+```
 
-### Step 3: Go live
+Save the `token` — you'll pass it as `X-Employee-Token` on subsequent requests.
 
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
+## 2. Fetch a card
+
+Retrieve a card's current state by its `cardId`.
+
+```bash
+curl "https://tapcoupon.at/api/v1/cards?cardId=9866191586296&timestamp=2026-01-01T00:00:00Z" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```json
+{
+  "cardId": "9866191586296",
+  "cardType": "loyaltyCard",
+  "activated": true,
+  "scansNeeded": 5,
+  "currentScans": 1,
+  "rewardMessage": "You earned a free coffee!",
+  "amountRenews": 0
+}
+```
+
+## 3. Stamp a loyalty card
+
+Record a scan when a customer completes a qualifying purchase. Amounts are in **cents**.
+
+```bash
+curl -X POST "https://tapcoupon.at/api/v1/loyalty-cards" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "X-Employee-Token: YOUR_EMPLOYEE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "cardId": "9866191586296" }'
+```
+
+```json
+{
+  "success": true,
+  "scansLeft": 4,
+  "renewsLeft": 1,
+  "message": "Scans completed: 1/5"
+}
+```
+
+## 4. Charge a coupon card
+
+Deduct an amount from a coupon card. All amounts are **integers in cents** (e.g. `500` = €5.00).
+
+```bash
+curl -X POST "https://tapcoupon.at/api/v1/coupon-cards" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "X-Employee-Token: YOUR_EMPLOYEE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "cardId": "1885144192279",
+    "amount": 500
+  }'
+```
+
+```json
+{
+  "success": true,
+  "amountLeft": 4500,
+  "message": "Amount charged successfully"
+}
+```
 
 ## Next steps
 
-Now that you have your docs running, explore these key features:
-
 <CardGroup cols={2}>
-
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
-
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
-
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
-
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
-
+  <Card title="Authentication" icon="key" href="/authentication">
+    Understand API keys and employee tokens.
+  </Card>
+  <Card title="Apply a template" icon="link" href="/api-reference/cards/apply-template">
+    Activate a physical card by applying a template.
+  </Card>
+  <Card title="Issue a digital card" icon="envelope" href="/api-reference/cards/create-digital">
+    Create and email a digital card to a customer.
+  </Card>
+  <Card title="Templates" icon="layer-group" href="/api-reference/templates/list">
+    Browse your available templates.
+  </Card>
 </CardGroup>
-
-<Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
-</Note>

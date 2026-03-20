@@ -1,0 +1,68 @@
+---
+title: "Use Loyalty Card"
+description: "Record a stamp on a loyalty card."
+---
+
+## POST `/loyalty-cards`
+
+Decrements `scansLeft` by one. When `scansLeft` reaches `0`:
+- The `rewardMessage` is returned.
+- If `renewsLeft > 0`, scans reset and `renewsLeft` is decremented.
+- If `unlimitedRenews` is `true`, scans reset indefinitely.
+- If no renews remain, a `422` is returned.
+
+### Authentication
+
+| Header | Required |
+| ------ | -------- |
+| `Authorization: Bearer YOUR_API_KEY` | Yes |
+| `X-Employee-Token: YOUR_EMPLOYEE_TOKEN` | Yes |
+
+### Request body
+
+| Field | Type | Required | Description |
+| ----- | ---- | -------- | ----------- |
+| `cardId` | string | Yes | The loyalty card to stamp |
+
+### Example request
+
+```bash
+curl -X POST "https://tapcoupon.at/api/v1/loyalty-cards" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "X-Employee-Token: YOUR_EMPLOYEE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "cardId": "3878707110880" }'
+```
+
+### Example responses
+
+<CodeGroup>
+
+```json Mid-cycle stamp
+{
+  "scansLeft": 4,
+  "renewsLeft": 10,
+  "success": true,
+  "message": "Scans completed: 1/5"
+}
+```
+
+```json Reward earned
+{
+  "scansLeft": 0,
+  "renewsLeft": 8,
+  "success": true,
+  "message": "Congratulations! You earned a free coffee!"
+}
+```
+
+</CodeGroup>
+
+### Error cases
+
+| Status | Reason |
+| ------ | ------ |
+| `400` | Card has expired |
+| `400` | Card is not a loyalty card |
+| `404` | Card not found |
+| `422` | No scans and no renews remaining |

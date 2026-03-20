@@ -1,0 +1,56 @@
+---
+title: "Use Coupon Card"
+description: "Deduct an amount from a coupon card's balance."
+---
+
+## POST `/coupon-cards`
+
+Books an amount on the coupon card. The request is rejected if `amount` exceeds the card's remaining balance.
+
+All amounts are **integers in cents** (e.g. `500` = €5.00).
+
+### Authentication
+
+| Header | Required |
+| ------ | -------- |
+| `Authorization: Bearer YOUR_API_KEY` | Yes |
+| `X-Employee-Token: YOUR_EMPLOYEE_TOKEN` | Yes |
+
+### Request body
+
+| Field | Type | Required | Description |
+| ----- | ---- | -------- | ----------- |
+| `cardId` | string | Yes | The card to charge |
+| `amount` | integer | Yes | Amount to deduct in cents |
+
+### Example request
+
+```bash
+curl -X POST "https://tapcoupon.at/api/v1/coupon-cards" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "X-Employee-Token: YOUR_EMPLOYEE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "cardId": "1885144192279",
+    "amount": 500
+  }'
+```
+
+### Example response
+
+```json
+{
+  "amountLeft": 4500,
+  "message": "Amount charged successfully",
+  "success": true
+}
+```
+
+### Error cases
+
+| Status | Reason |
+| ------ | ------ |
+| `400` | Amount is 0, negative, or exceeds `amountLeft` |
+| `400` | Card has expired |
+| `400` | Card is not a coupon card |
+| `404` | Card not found |
