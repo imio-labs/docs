@@ -11,6 +11,10 @@ Decrements `scansLeft` by one. When `scansLeft` reaches `0`:
 - If `unlimitedRenews` is `true`, scans reset indefinitely.
 - If no renews remain, a `422` is returned.
 
+<Note>
+  A renew (when `scansLeft` hits `0` and the card resets) is billed. Regular stamps are free. Check [GET /prices](/api-reference/other/prices) for current pricing.
+</Note>
+
 ### Authentication
 
 | Header | Required |

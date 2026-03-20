@@ -72,32 +72,29 @@
       "anchors": [
         {
           "anchor": "Dashboard",
-          "href": "https://dashboard.tapcoupon.com",
+          "href": "https://dashboard.tapcoupon.at",
           "icon": "gauge"
         },
         {
           "anchor": "Support",
-          "href": "mailto:support@tapcoupon.com",
+          "href": "mailto:hilfe@tapcoupon.at",
           "icon": "envelope"
         }
       ]
     }
   },
-  "logo": {
-    "light": "/logo/tap_coupon_logo_transparent.svg",
-    "dark": "/logo/tap_coupon_logo.svg"
-  },
+  "logo": "/logo/tap_coupon_logo_transparent.svg",
   "navbar": {
     "links": [
       {
         "label": "Support",
-        "href": "mailto:support@tapcoupon.com"
+        "href": "mailto:hilfe@tapcoupon.at"
       }
     ],
     "primary": {
       "type": "button",
       "label": "Dashboard",
-      "href": "https://dashboard.tapcoupon.com"
+      "href": "https://dashboard.tapcoupon.at"
     }
   },
   "footer": {
