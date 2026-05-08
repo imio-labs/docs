@@ -5,9 +5,9 @@ description: "Let third-party apps trigger a card redemption through the TapCoup
 
 ## Overview
 
-The partner integration lets your app hand off a payment or stamp action to the TapCoupon point-of-sale app on the store's device. Your server creates a short-lived session, sends the device a deep link, and polls for the result once the employee completes the scan.
+The partner integration lets your app hand off a payment or stamp action to the TapCoupon point-of-sale app on the store's device. Your app creates a short-lived session, opens the TapCoupon deep link on the same device, and fetches the result once the employee completes the scan.
 
-**Typical use case:** A customer checks out in your app. You create a payment session and redirect the store's POS device to the TapCoupon app, which handles card scanning and employee authentication. Once the card is charged or stamped, TapCoupon calls your callback URL and you fetch the result.
+**Typical use case:** A customer checks out in your app on the store's device. You create a payment session, open the `tapcoupon://complete-session` deep link, and the TapCoupon app handles card scanning and employee authentication. Once the card is charged or stamped, TapCoupon opens your callback URL and you fetch the result.
 
 ---
 
@@ -15,7 +15,7 @@ The partner integration lets your app hand off a payment or stamp action to the 
 
 <Steps>
   <Step title="Create a session">
-    Your server calls `POST /payment-sessions` with your app name, a callback URL, and the card types you accept. You receive a short-lived token (valid for 5 minutes).
+    Your app calls `POST /payment-sessions` with your app name, a callback URL, and the card types you accept. You receive a short-lived token (valid for 5 minutes).
 
     ```bash
     curl -X POST "https://tapcoupon.at/api/v1/payment-sessions" \
@@ -71,10 +71,10 @@ The partner integration lets your app hand off a payment or stamp action to the 
 
 ## Security
 
-- **The token is the secret.** Anyone who holds the token can read the session status, so treat it like a short-lived password — share it only via the deep link.
-- **Tokens expire in 5 minutes** and are auto-deleted by MongoDB TTL index after expiry.
+- **Tokens expire in 5 minutes** and are auto-deleted after expiry.
 - **Each token allows at most two reads** — one for the TapCoupon app (to display session info) and one for your status poll. Further reads are rejected with `410 Gone`.
-- **No authentication is required** to create a session or poll its status. The entropy of the 32-character random token is the only protection needed for these non-sensitive endpoints. The actual card operation (charging/stamping) is always performed by an authenticated employee inside the TapCoupon app.
+- **Deep links can be intercepted.** If a malicious app on the device intercepts the `tapcoupon://complete-session` deep link and reads the session status before you do, your status poll will return `410 Gone` instead of the result. Treat a `410` response as a signal that the session was tampered with — do not fulfill the transaction.
+- **The actual card operation is always authenticated.** Charging or stamping a card requires an authenticated TapCoupon employee. An interceptor can read the session metadata, but cannot complete the payment on your behalf.
 
 ---
 
