@@ -1,0 +1,51 @@
+---
+title: "Create Payment Session"
+description: "Create a short-lived session that lets the TapCoupon app complete a card redemption on your behalf."
+---
+
+## POST `/payment-sessions`
+
+Creates a payment session and returns a 32-character token. Send this token to the TapCoupon app via the `tapcoupon://complete-session` deep link. The session expires in 5 minutes.
+
+No authentication is required.
+
+### Request body
+
+| Field | Type | Required | Description |
+| ----- | ---- | -------- | ----------- |
+| `appName` | string | Yes | Name shown to the employee in the TapCoupon app (max 100 chars) |
+| `callbackUrl` | string | Yes | Deep link or URL opened by TapCoupon after a successful scan (max 500 chars) |
+| `supportedCardTypes` | array | Yes | Card types to accept — any combination of `"coupon"` and `"loyalty"` |
+
+### Example request
+
+```bash
+curl -X POST "https://tapcoupon.at/api/v1/payment-sessions" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "appName": "Kassandro",
+    "callbackUrl": "kassandro://payment-complete",
+    "supportedCardTypes": ["coupon", "loyalty"]
+  }'
+```
+
+### Example response
+
+```json
+{
+  "token": "a3f9kqzm8bnwvrtd2xeljcuy4osp1gh7"
+}
+```
+
+Pass this token in the deep link:
+
+```
+tapcoupon://complete-session?token=a3f9kqzm8bnwvrtd2xeljcuy4osp1gh7
+```
+
+### Error cases
+
+| Status | Reason |
+| ------ | ------ |
+| `400` | Missing or invalid fields |
+| `400` | `supportedCardTypes` contains a value other than `"coupon"` or `"loyalty"` |

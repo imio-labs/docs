@@ -1,0 +1,105 @@
+---
+title: "Partner Integration"
+description: "Let third-party apps trigger a card redemption through the TapCoupon app via a deep link."
+---
+
+## Overview
+
+The partner integration lets your app hand off a payment or stamp action to the TapCoupon point-of-sale app on the store's device. Your server creates a short-lived session, sends the device a deep link, and polls for the result once the employee completes the scan.
+
+**Typical use case:** A customer checks out in your app. You create a payment session and redirect the store's POS device to the TapCoupon app, which handles card scanning and employee authentication. Once the card is charged or stamped, TapCoupon calls your callback URL and you fetch the result.
+
+---
+
+## How it works
+
+<Steps>
+  <Step title="Create a session">
+    Your server calls `POST /payment-sessions` with your app name, a callback URL, and the card types you accept. You receive a short-lived token (valid for 5 minutes).
+
+    ```bash
+    curl -X POST "https://tapcoupon.at/api/v1/payment-sessions" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "appName": "Kassandro",
+        "callbackUrl": "kassandro://payment-complete",
+        "supportedCardTypes": ["coupon", "loyalty"]
+      }'
+    ```
+
+    ```json
+    { "token": "a3f9...32 chars...z7q2" }
+    ```
+  </Step>
+
+  <Step title="Open the deep link on the POS device">
+    Send the TapCoupon app the session token via the `tapcoupon://complete-session` deep link — for example by displaying a QR code or triggering it via ADB during development.
+
+    ```
+    tapcoupon://complete-session?token=a3f9...z7q2
+    ```
+
+    The TapCoupon app opens and shows a banner — **"Redirect from Kassandro"** with a live countdown — above the normal scan interface. The employee scans the customer's card as usual.
+  </Step>
+
+  <Step title="Employee scans and confirms">
+    The employee scans the customer's coupon or loyalty card. TapCoupon checks that the card type is supported by your session, charges or stamps it, then launches your `callbackUrl`.
+
+    If the card type is not in `supportedCardTypes` the employee sees an error and the session remains open until it expires.
+  </Step>
+
+  <Step title="Fetch the result">
+    When your callback URL opens, call `GET /payment-sessions/:token` to confirm the outcome.
+
+    ```bash
+    curl "https://tapcoupon.at/api/v1/payment-sessions/a3f9...z7q2"
+    ```
+
+    ```json
+    {
+      "status": "completed",
+      "cardType": "coupon",
+      "amount": 1500,
+      "completedAt": "2026-05-08T14:23:01Z",
+      "expiresAt": "2026-05-08T14:25:00Z"
+    }
+    ```
+  </Step>
+</Steps>
+
+---
+
+## Security
+
+- **The token is the secret.** Anyone who holds the token can read the session status, so treat it like a short-lived password — share it only via the deep link.
+- **Tokens expire in 5 minutes** and are auto-deleted by MongoDB TTL index after expiry.
+- **Each token allows at most two reads** — one for the TapCoupon app (to display session info) and one for your status poll. Further reads are rejected with `410 Gone`.
+- **No authentication is required** to create a session or poll its status. The entropy of the 32-character random token is the only protection needed for these non-sensitive endpoints. The actual card operation (charging/stamping) is always performed by an authenticated employee inside the TapCoupon app.
+
+---
+
+## Deep link reference
+
+| Part | Value |
+| ---- | ----- |
+| Scheme | `tapcoupon` |
+| Host | `complete-session` |
+| Query param | `token` — the session token from `POST /payment-sessions` |
+
+**Full format:**
+```
+tapcoupon://complete-session?token=YOUR_SESSION_TOKEN
+```
+
+---
+
+## API reference
+
+<CardGroup cols={2}>
+  <Card title="Create session" icon="plus" href="/api-reference/integration/create-session">
+    `POST /payment-sessions`
+  </Card>
+  <Card title="Get status" icon="circle-check" href="/api-reference/integration/get-status">
+    `GET /payment-sessions/:token`
+  </Card>
+</CardGroup>

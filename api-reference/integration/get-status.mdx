@@ -1,0 +1,77 @@
+---
+title: "Get Session Status"
+description: "Check whether a payment session has been completed by the TapCoupon app."
+---
+
+## GET `/payment-sessions/:token`
+
+Returns the current status of a payment session. Call this from your callback handler after TapCoupon opens your `callbackUrl`.
+
+No authentication is required.
+
+<Warning>
+  Each token allows **at most two reads** across both this endpoint and the TapCoupon app's internal info fetch. After both reads are consumed, the endpoint returns `410 Gone`. Plan to call this endpoint once — in your callback handler.
+</Warning>
+
+### Path parameters
+
+| Parameter | Type | Description |
+| --------- | ---- | ----------- |
+| `token` | string | The session token returned by `POST /payment-sessions` |
+
+### Example request
+
+```bash
+curl "https://tapcoupon.at/api/v1/payment-sessions/a3f9kqzm8bnwvrtd2xeljcuy4osp1gh7"
+```
+
+### Example responses
+
+<CodeGroup>
+```json Completed (coupon)
+{
+  "status": "completed",
+  "cardType": "coupon",
+  "amount": 1500,
+  "completedAt": "2026-05-08T14:23:01Z",
+  "expiresAt": "2026-05-08T14:25:00Z"
+}
+```
+
+```json Completed (loyalty)
+{
+  "status": "completed",
+  "cardType": "loyalty",
+  "amount": null,
+  "completedAt": "2026-05-08T14:23:01Z",
+  "expiresAt": "2026-05-08T14:25:00Z"
+}
+```
+
+```json Pending
+{
+  "status": "pending",
+  "cardType": null,
+  "amount": null,
+  "completedAt": null,
+  "expiresAt": "2026-05-08T14:25:00Z"
+}
+```
+</CodeGroup>
+
+### Response fields
+
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `status` | string | `"pending"` or `"completed"` |
+| `cardType` | string \| null | `"coupon"` or `"loyalty"` once completed |
+| `amount` | integer \| null | Amount deducted in cents — only set for coupon cards |
+| `completedAt` | string \| null | ISO 8601 timestamp of when the card was scanned |
+| `expiresAt` | string | ISO 8601 timestamp of session expiry |
+
+### Error cases
+
+| Status | Reason |
+| ------ | ------ |
+| `404` | Token not found |
+| `410` | Read limit reached (token consumed) or session expired |

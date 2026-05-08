@@ -20,6 +20,12 @@
               "quickstart",
               "authentication"
             ]
+          },
+          {
+            "group": "Partner Integration",
+            "pages": [
+              "integration"
+            ]
           }
         ]
       },
@@ -63,6 +69,13 @@
               "api-reference/other/prices",
               "api-reference/other/location",
               "api-reference/other/customers"
+            ]
+          },
+          {
+            "group": "Partner Integration",
+            "pages": [
+              "api-reference/integration/create-session",
+              "api-reference/integration/get-status"
             ]
           }
         ]
