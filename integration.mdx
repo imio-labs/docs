@@ -30,6 +30,7 @@ The partner integration lets your app hand off a payment or stamp action to the 
     ```json
     { "token": "a3f9...32 chars...z7q2" }
     ```
+
   </Step>
 
   <Step title="Open the deep link on the POS device">
@@ -40,12 +41,16 @@ The partner integration lets your app hand off a payment or stamp action to the 
     ```
 
     The TapCoupon app opens and shows a banner — **"Redirect from Kassandro"** with a live countdown — above the normal scan interface. The employee scans the customer's card as usual.
+
   </Step>
 
   <Step title="Employee scans and confirms">
     The employee scans the customer's coupon or loyalty card. TapCoupon checks that the card type is supported by your session, charges or stamps it, then launches your `callbackUrl`.
 
+    TapCoupon also appends the session token to your callback query params as `token`.
+
     If the card type is not in `supportedCardTypes` the employee sees an error and the session remains open until it expires.
+
   </Step>
 
   <Step title="Fetch the result">
@@ -64,10 +69,15 @@ The partner integration lets your app hand off a payment or stamp action to the 
       "expiresAt": "2026-05-08T14:25:00Z"
     }
     ```
+
   </Step>
 </Steps>
 
 ---
+
+## Android deep link behavior
+
+On Android, opening your `callbackUrl` may start a new app instance depending on the activity that handles the deep link and its `android:launchMode` in your `AndroidManifest.xml`. If your flow relies on in-memory state, ensure only one instance of your app is running or restore context from the token. If you need assistance with your setup, contact us; we have a Flutter demo app.
 
 ## Security
 
@@ -80,13 +90,14 @@ The partner integration lets your app hand off a payment or stamp action to the 
 
 ## Deep link reference
 
-| Part | Value |
-| ---- | ----- |
-| Scheme | `tapcoupon` |
-| Host | `complete-session` |
+| Part        | Value                                                     |
+| ----------- | --------------------------------------------------------- |
+| Scheme      | `tapcoupon`                                               |
+| Host        | `complete-session`                                        |
 | Query param | `token` — the session token from `POST /payment-sessions` |
 
 **Full format:**
+
 ```
 tapcoupon://complete-session?token=YOUR_SESSION_TOKEN
 ```
@@ -96,10 +107,18 @@ tapcoupon://complete-session?token=YOUR_SESSION_TOKEN
 ## API reference
 
 <CardGroup cols={2}>
-  <Card title="Create session" icon="plus" href="/api-reference/integration/create-session">
+  <Card
+    title="Create session"
+    icon="plus"
+    href="/api-reference/integration/create-session"
+  >
     `POST /payment-sessions`
   </Card>
-  <Card title="Get status" icon="circle-check" href="/api-reference/integration/get-status">
+  <Card
+    title="Get status"
+    icon="circle-check"
+    href="/api-reference/integration/get-status"
+  >
     `GET /payment-sessions/:token`
   </Card>
 </CardGroup>
